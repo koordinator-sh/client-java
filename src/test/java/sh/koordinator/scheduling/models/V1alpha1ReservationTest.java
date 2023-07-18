@@ -1,44 +1,19 @@
-# Koordinator Java Client
+/*
+Copyright 2022 The Koordinator Authors.
 
-Java client for the [Koordinator](https://koordinator.sh/) API.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-## Usage
+    http://www.apache.org/licenses/LICENSE-2.0
 
-Add this dependency to your project's POM:
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 
-```xml
-<dependency>
-    <groupId>sh.koordinator</groupId>
-    <artifactId>client-java</artifactId>
-    <version>1.3.0</version>
-</dependency>
-```
-
-**Note that this package has not been uploaded to the maven official repository. Currently, you should manually download this repo and package it to use.**
-
-You should also add the dependency of Kubernetes official java SDK:
-
-```xml
-<dependency>
-    <groupId>io.kubernetes</groupId>
-    <artifactId>client-java</artifactId>
-    <version>16.0.2</version>
-</dependency>
-```
-
-### Manually package
-
-At first generate the JAR by executing:
-
-    mvn package
-
-Then manually install the following JARs:
-
-* target/client-java-1.3.0.jar
-
-## Getting Started
-
-```java
 package sh.koordinator.scheduling.models;
 
 import java.io.IOException;
@@ -69,14 +44,6 @@ public class V1alpha1ReservationTest {
 
     @Test
     public void testCreateReservation() throws IOException {
-        ApiClient apiClient = Config.defaultClient();
-        GenericKubernetesApi<V1alpha1Reservation, V1alpha1ReservationList> reservationClient = new GenericKubernetesApi<>(
-            V1alpha1Reservation.class,
-            V1alpha1ReservationList.class,
-            API_GROUP,
-            API_VERSION,
-            RESOURCE_PLURAL,
-            apiClient);
         V1ObjectMeta objectMeta = new V1ObjectMeta().name("test-reservation");
         V1alpha1ReservationSpecOwners owners = new V1alpha1ReservationSpecOwners()
             .labelSelector(
@@ -112,6 +79,15 @@ public class V1alpha1ReservationTest {
             .kind(API_KIND)
             .metadata(objectMeta)
             .spec(reservationSpec);
+
+        ApiClient apiClient = Config.defaultClient();
+        GenericKubernetesApi<V1alpha1Reservation, V1alpha1ReservationList> reservationClient = new GenericKubernetesApi<>(
+            V1alpha1Reservation.class,
+            V1alpha1ReservationList.class,
+            API_GROUP,
+            API_VERSION,
+            RESOURCE_PLURAL,
+            apiClient);
         KubernetesApiResponse<V1alpha1Reservation> response = reservationClient.create(reservation);
         System.out.println(response.getStatus());
         System.out.println(response.getObject());
@@ -119,4 +95,3 @@ public class V1alpha1ReservationTest {
         reservationClient.delete(reservation.getMetadata().getName());
     }
 }
-```
